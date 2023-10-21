@@ -61,7 +61,13 @@ function displayWords() {
 
     const elements = Game.acceptedWords.map((word) => {
         const el = document.createElement('div');
-        el.innerHTML = word;
+
+        if (Game.letters.every(c => word.indexOf(c) >= 0)) {
+            el.innerHTML = word + "✨";
+        } else {
+            el.innerHTML = word;
+        }
+
         return el;
     });
 
