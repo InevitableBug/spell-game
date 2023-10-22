@@ -21,6 +21,12 @@ body {
     width: 5rem;
     text-align: center;
     border: 2px solid grey;
+    border-radius: 5px;
+    user-select: none;
+}
+
+.letter:active {
+    background: grey;
 }
 
 .word {
@@ -45,7 +51,14 @@ body {
 .state-holder {
     display: flex;
     justify-content: space-between;
-    margin-top: 3rem;
+}
+
+.time-holder {
+    text-align: right;
+}
+
+.muted {
+    color: grey;
 }
 
 .button-47 {

@@ -1,6 +1,10 @@
 import {WordsList} from "./words.js";
 import {AllWordsList} from "./all_words.js";
 
+// const TIME_MODULUS = 1000 * 60 // new word every minute
+const TIME_MODULUS = 1000 * 60 * 60 * 24 // new word every day
+const TIME_OFFSET = 1000 * 60 * 60 * 13 // 12 hours
+
 export const Game = {
 
     word: '',
@@ -12,8 +16,16 @@ export const Game = {
 
     init() {
 
+        this.word = this.getWord();
         this.letters = this.getLetters();
         shuffle(this.letters);
+
+        this.acceptedWords = [];
+        this.currentWord = '';
+
+        this._onLettersUpdate();
+        this._onWordUpdate();
+        this._onWordsUpdate();
 
     },
 
@@ -21,6 +33,7 @@ export const Game = {
         return {
             'word': this.word,
             'accepted_words': this.acceptedWords,
+            'score': this.getScore(),
         }
     },
 
@@ -33,12 +46,18 @@ export const Game = {
         return false;
     },
 
+    checkForRollover() {
+        if (this.getWord() !== this.word) {
+            this.init();
+        }
+    },
+
     getLetters() {
         const letters = new Set();
 
-        this.word = getPseudoRandomElement(WordsList);
-        
-        this.word.split('').forEach(c => letters.add(c.toUpperCase()));
+        this.getWord()
+            .split('')
+            .forEach(c => letters.add(c.toUpperCase()));
 
         var letters_arr = Array.from(letters);
         const vowel = getPseudoRandomElement(letters_arr.filter(isVowel));
@@ -49,9 +68,12 @@ export const Game = {
         return letters_arr;
     },
 
+    getWord() {
+        return getPseudoRandomElement(WordsList);
+    },
+
     getScore() {
         return this.acceptedWords.reduce((acc, cur) =>  {
-            console.log(acc, cur);
             return acc += cur.length;
         }, 0);
     },
@@ -131,8 +153,11 @@ export const Game = {
         this._onWordsUpdate = fn;
     },
 
-}
+    timeUntilNext: () => {
+        return TIME_MODULUS - (Date.now() + TIME_OFFSET) % TIME_MODULUS;
+    }
 
+}
 
 function rand(seed) {
 
@@ -143,7 +168,7 @@ function rand(seed) {
     return seed;
 }
 
-function middleSquare(n) {
+function middleSquare(n) {  
     const len = ('' +n).length;
     let m = ''+ (n*n);
     if (m.length %2 !== len %2) m = '0' + m;
@@ -161,10 +186,10 @@ function shuffle(a) {
 }
 
 function getPseudoRandomElement(a) {
-    let n = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) // number of days since the epoch
-    // let n = Math.floor(Date.now() / (1000 * 60)) // number of minutes since the epoch
+    let n = Math.floor((Date.now() + TIME_OFFSET) / TIME_MODULUS) // number of minutes since the epoch
     return a[rand(n) % a.length]
 }
+
 
 function isVowel(c) {
     return c === 'A' ||

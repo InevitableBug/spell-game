@@ -30,6 +30,14 @@ window.onBackspaceClick = function() {
     Game.backspace();
 }
 
+window.onShowHistoryClick = function() {
+    document.getElementById('history_modal').showModal();
+}
+
+setInterval(() => {
+    Game.checkForRollover();
+    displayTime();
+}, 1000);
 
 function init() {
 
@@ -59,7 +67,7 @@ function displayWord() {
 
 function displayWords() {
 
-    const elements = Game.acceptedWords.map((word) => {
+    const elements = Game.acceptedWords.sort().map((word) => {
         const el = document.createElement('div');
 
         if (Game.letters.every(c => word.indexOf(c) >= 0)) {
@@ -77,6 +85,21 @@ function displayWords() {
 
 function displayScore() {
     document.getElementById('current_score').innerText = Game.getScore();
+    document.getElementById('current_count').innerText = Game.acceptedWords.length;
+}
+
+function displayTime() {
+    const d = new Date(Game.timeUntilNext());
+
+    const s = [d.getUTCHours(), d.getUTCMinutes(), d.getUTCSeconds()]
+        .map(leftPad)
+        .join(":");
+
+    document.getElementById('time_until').innerText = s;
+}
+
+function leftPad(n) {
+    return (n < 10) ? "0"+n : ""+n;
 }
 
 function updateDisplay() {
@@ -84,15 +107,21 @@ function updateDisplay() {
     displayWord();
     displayWords();
     displayScore();
+    displayTime();
 }
+
+const STATE_KEY = "game_state_";
 
 function persistState() {
     const state = Game.getState();
-    window.localStorage.setItem("game_state", JSON.stringify(state));
+    const key = STATE_KEY + state.word;
+
+    window.localStorage.setItem(key, JSON.stringify(state));
 }
 
 function loadState() {
-    const state = window.localStorage.getItem("game_state");
+    const key = STATE_KEY + Game.word;
+    const state = window.localStorage.getItem(key);
     if (state) {
         Game.setState(JSON.parse(state));
     }
