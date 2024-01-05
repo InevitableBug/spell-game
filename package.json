@@ -2,8 +2,10 @@
   "name": "web",
   "version": "1.0.0",
   "scripts": {
-    "serve": "python -m http.server 9000"
+    "serve": "parcel ./src/index.html",
+    "build": "parcel build ./src/index.html"
   },
-  "dependencies": {
+  "devDependencies": {
+    "parcel": "^2.10.0"
   }
 }
