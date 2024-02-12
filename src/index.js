@@ -84,7 +84,6 @@ function displayWords() {
 }
 
 function displayScore() {
-    document.getElementById('current_score').innerText = Game.getScore();
     document.getElementById('current_count').innerText = Game.acceptedWords.length;
 }
 

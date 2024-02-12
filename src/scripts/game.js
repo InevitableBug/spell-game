@@ -60,7 +60,12 @@ export const Game = {
             .forEach(c => letters.add(c.toUpperCase()));
 
         var letters_arr = Array.from(letters);
-        const vowel = getPseudoRandomElement(letters_arr.filter(isVowel));
+
+        let vowel = getPseudoRandomElement(letters_arr.filter(isVowel));
+
+        if (isValentinesDay()) {
+            vowel = 'I';
+        }
 
         letters_arr = letters_arr.filter(c => c !== vowel)
         letters_arr.push(vowel);
@@ -69,7 +74,11 @@ export const Game = {
     },
 
     getWord() {
-        return getPseudoRandomElement(WordsList);
+        if (isValentinesDay()) {
+            return "nick♥zina";
+        } else {
+            return getPseudoRandomElement(WordsList);
+        }
     },
 
     getScore() {
@@ -197,4 +206,9 @@ function isVowel(c) {
            c === 'I' ||
            c === 'O' ||
            c === 'U';
+}
+
+function isValentinesDay() {
+    const date = new Date();
+    return date.getDate() === 14 && date.getMonth() === 1
 }
